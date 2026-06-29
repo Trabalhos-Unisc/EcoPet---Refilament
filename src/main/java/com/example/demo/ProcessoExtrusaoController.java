@@ -7,16 +7,36 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/extrusao")
 public class ProcessoExtrusaoController {
 
-    // Rota para Executar o Processo de Extrusão
+    private final EcoPetService service;
+
+    public ProcessoExtrusaoController(EcoPetService service) {
+        this.service = service;
+    }
+
+    // Rota para Processar a Extrusão
     // Método: POST | URL: http://localhost:8080/api/extrusao/processar
     @PostMapping("/processar")
-    public ResponseEntity<Filamento> processarLote(@RequestBody ProcessoExtrusao processo) {
+    public ResponseEntity<?> processarExtrusao(@RequestBody ProcessoExtrusao processoRequisicao) {
         
-        // O Spring Boot já montou o objeto "processo" com os dados que vieram no JSON.
-        // Chamamos a sua lógica:
-        Filamento filamentoGerado = processo.processar();
+        // Busca o lote real que está guardado no sistema usando o ID que veio no JSON
+        Lote loteReal = service.buscarLotePorId(processoRequisicao.getLote().getId());
         
-        // Retorna o filamento 
+        if (loteReal == null) {
+            return ResponseEntity.badRequest().body("Lote não encontrado no sistema!");
+        }
+
+        // Vincula o lote real ao processo
+        processoRequisicao.setLote(loteReal);
+
+        // Calcula perdas e gera o filamento
+        Filamento filamentoGerado = processoRequisicao.processar();
+
+        // Salva o processo no Dashboard
+        service.adicionarProcesso(processoRequisicao);
+
+        // Joga o filamento gerado direto no estoque automaticamente
+        service.getEstoque().entrada(filamentoGerado);
+
         return ResponseEntity.ok(filamentoGerado);
     }
 }
