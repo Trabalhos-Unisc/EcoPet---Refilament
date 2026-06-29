@@ -7,6 +7,10 @@ public class Dashboard {
     private RelatorioSustentabilidade relatorio;
     private List<ProcessoExtrusao> processos;
 
+    public Dashboard() {
+        // Construtor vazio para o Spring Boot
+    }
+
     public Dashboard(Estoque estoque, RelatorioSustentabilidade relatorio, List<ProcessoExtrusao> processos) {
         this.estoque = estoque;
         this.relatorio = relatorio;

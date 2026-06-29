@@ -13,6 +13,10 @@ public class ProcessoExtrusao {
     /** Peso em kg efetivamente perdido no processo (calculado em processar()). */
     private double pesoPerda;
 
+    public ProcessoExtrusao() {
+        // Construtor vazio exigido pelo Spring Boot
+    }
+
     public ProcessoExtrusao(Lote lote, double rendimento, LocalDate dataProc) {
         this.lote = lote;
         this.rendimento = rendimento;
