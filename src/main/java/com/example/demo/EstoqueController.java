@@ -9,22 +9,27 @@ import java.util.List;
 @RequestMapping("/api/estoque")
 public class EstoqueController {
 
-    // Instanciado como um objeto ao em vez de uma lista
-    private Estoque estoqueGeral = new Estoque();
+    // Em vez de "new", nós pedimos o service para o Spring Boot
+    private final EcoPetService service;
+
+    // Construtor: O Spring Boot injeta automaticamente o Singleton aqui
+    public EstoqueController(EcoPetService service) {
+        this.service = service;
+    }
 
     // Rota para Ver o Status do Estoque 
     // Método: GET | URL: http://localhost:8080/api/estoque
     @GetMapping
     public ResponseEntity<Estoque> verEstoque() {
-        return ResponseEntity.ok(estoqueGeral);
+        return ResponseEntity.ok(service.getEstoque());
     }
 
     // Rota para Dar Entrada em um Filamento 
     // Método: POST | URL: http://localhost:8080/api/estoque/entrada
     @PostMapping("/entrada")
     public ResponseEntity<Estoque> darEntrada(@RequestBody Filamento filamentoGerado) {
-        estoqueGeral.entrada(filamentoGerado);
-        return ResponseEntity.ok(estoqueGeral); // Retorna o estoque atualizado
+        service.getEstoque().entrada(filamentoGerado);
+        return ResponseEntity.ok(service.getEstoque()); // Retorna o estoque atualizado
     }
 
     // Rota para Solicitar Retirada (Consumo FIFO) 
@@ -33,8 +38,8 @@ public class EstoqueController {
     public ResponseEntity<?> registrarSaida(@RequestParam double metros) {
         try {
             // Tenta retirar. Se não tiver saldo, a classe joga um IllegalArgumentException
-            estoqueGeral.saida(metros);
-            return ResponseEntity.ok(estoqueGeral);
+            service.getEstoque().saida(metros);
+            return ResponseEntity.ok(service.getEstoque());
             
         } catch (IllegalArgumentException erro) {
             // Se der erro (estoque insuficiente), devolvemos um status 400
@@ -46,6 +51,6 @@ public class EstoqueController {
     // Método: GET | URL: http://localhost:8080/api/estoque/historico
     @GetMapping("/historico")
     public ResponseEntity<List<String>> verHistorico() {
-        return ResponseEntity.ok(estoqueGeral.getHistoricoSaidas());
+        return ResponseEntity.ok(service.getEstoque().getHistoricoSaidas());
     }
 }

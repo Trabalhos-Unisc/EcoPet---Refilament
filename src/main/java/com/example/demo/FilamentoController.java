@@ -1,47 +1,50 @@
 package com.example.demo;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/filamentos")
 public class FilamentoController {
 
-    // Banco de dados em memória para os Filamentos
-    private List<Filamento> bancoDeFilamentos = new ArrayList<>();
+    private final EcoPetService service;
 
-    // Rota para Listar Todos os Filamentos
+    // Injeção do mesmo serviço centralizado
+    public FilamentoController(EcoPetService service) {
+        this.service = service;
+    }
+
+    // Listar Filamentos do Estoque Central
     // Método: GET | URL: http://localhost:8080/api/filamentos
     @GetMapping
     public ResponseEntity<List<Filamento>> listarTodos() {
-        return ResponseEntity.ok(bancoDeFilamentos);
+        // Pega a lista estruturada de dentro do estoque geral do serviço
+        return ResponseEntity.ok(service.getEstoque().getFilamentos());
     }
 
     // Rota para Buscar um Filamento por ID
     // Método: GET | URL: http://localhost:8080/api/filamentos/F001
     @GetMapping("/{id}")
     public ResponseEntity<Filamento> buscarPorId(@PathVariable String id) {
-        Optional<Filamento> filamentoEncontrado = bancoDeFilamentos.stream()
-                .filter(f -> f.getId().equals(id))
+        java.util.Optional<Filamento> filamentoEncontrado = service.getEstoque().getFilamentos().stream()
+                .filter(f -> f.getId().equalsIgnoreCase(id)) // equalsIgnoreCase evita problemas com maiúsculas/minúsculas
                 .findFirst();
 
         if (filamentoEncontrado.isPresent()) {
             return ResponseEntity.ok(filamentoEncontrado.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        
+        // Se o ID não for encontrado no estoque, devolve status 404
+        return ResponseEntity.notFound().build();
     }
 
     // Rota para Cadastrar um Novo Filamento
     // Método: POST | URL: http://localhost:8080/api/filamentos
     @PostMapping
     public ResponseEntity<Filamento> cadastrar(@RequestBody Filamento novoFilamento) {
-        bancoDeFilamentos.add(novoFilamento);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoFilamento);
+        service.getEstoque().entrada(novoFilamento);
+        return ResponseEntity.ok(novoFilamento);
     }
 }
