@@ -1,8 +1,13 @@
+package com.example.demo;
+
 public class Filamento {
     private String id;
     private double comprimento;
     private Lote loteOrigem;
     private double estoqueAtual;
+
+    public Filamento() {
+    }
 
     public Filamento(String id, double comprimento, Lote loteOrigem, double estoqueAtual) {
         this.id = id;

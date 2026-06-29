@@ -1,3 +1,5 @@
+package com.example.demo;
+
 import java.time.LocalDate;
 
 public class ProcessoExtrusao {
@@ -10,6 +12,10 @@ public class ProcessoExtrusao {
 
     /** Peso em kg efetivamente perdido no processo (calculado em processar()). */
     private double pesoPerda;
+
+    public ProcessoExtrusao() {
+        // Construtor vazio exigido pelo Spring Boot
+    }
 
     public ProcessoExtrusao(Lote lote, double rendimento, LocalDate dataProc) {
         this.lote = lote;
