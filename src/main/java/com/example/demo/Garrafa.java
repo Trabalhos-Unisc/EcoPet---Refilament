@@ -1,3 +1,5 @@
+package com.example.demo;
+
 import java.time.LocalDate;
 
 public class Garrafa {
@@ -5,6 +7,9 @@ public class Garrafa {
     private double peso;
     private LocalDate dataColeta;
     private String lote;
+
+    public Garrafa() {
+    }
 
     public Garrafa(String id, double peso, LocalDate dataColeta, String lote) {
         this.id = id;

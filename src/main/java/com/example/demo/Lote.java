@@ -1,3 +1,5 @@
+package com.example.demo;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,12 @@ public class Lote {
     private LocalDate data;
     private List<Garrafa> garrafa;
     private double filamentoProd;
+
+    public Lote() {
+        // Construtor vazio exigido pelo Spring/Jackson
+        // Inicializa a lista para evitar que ela fique "null"
+        this.garrafa = new ArrayList<>(); 
+    }
 
     public Lote(String id, LocalDate data) {
         this.id = id;
