@@ -33,4 +33,16 @@ public class GarrafaController {
         service.adicionarGarrafa(novaGarrafa);
         return ResponseEntity.ok(novaGarrafa);
     }
+
+    // Rota para Deletar uma Garrafa
+    // Método: DELETE | URL: http://localhost:8080/api/garrafas/G001
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarGarrafa(@org.springframework.web.bind.annotation.PathVariable String id) {
+        boolean removido = service.removerGarrafa(id);
+        if (removido) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

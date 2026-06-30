@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class CalculadoraImpacto {
 
     /**
@@ -28,7 +31,7 @@ public class CalculadoraImpacto {
     }
 
     /**
-     * Calcula o plástico salvo (em kg) com base no número de garrafas do lote.
+     * Calcula o plástico salvo (em kg) com base no peso total das garrafas do lote.
      *
      * @param l Lote a ser analisado
      * @return Plástico salvo em kg
@@ -47,6 +50,7 @@ public class CalculadoraImpacto {
      * @return CO2 evitado em kg
      */
     public double calcCO2(double kg) {
+        if (kg <= 0) return 0;
         double co2Evitado = kg * co2PorKgPet;
         System.out.println("[CalculadoraImpacto] CO2 evitado: " + String.format("%.2f", co2Evitado) + " kg para " + kg + " kg de PET");
         return co2Evitado;
@@ -60,6 +64,9 @@ public class CalculadoraImpacto {
      * @return Número estimado de peças
      */
     public int calcPecas(double metros) {
+        if (metrosPorPeca <= 0 || metros <= 0) {
+            return 0;
+        }
         int pecas = (int) (metros / metrosPorPeca);
         System.out.println("[CalculadoraImpacto] Peças estimadas com " + metros + " m: " + pecas);
         return pecas;
@@ -73,7 +80,7 @@ public class CalculadoraImpacto {
      */
     public double calcYield(Lote l) {
         double pesoTotal = l.getPesoTotal();
-        if (pesoTotal == 0) {
+        if (pesoTotal <= 0) {
             System.out.println("[CalculadoraImpacto] Lote sem peso registrado.");
             return 0;
         }
@@ -90,7 +97,7 @@ public class CalculadoraImpacto {
      */
     public double rendMedioPorGarrafa(Lote l) {
         int totalGarrafas = l.getTotalGarrafas();
-        if (totalGarrafas == 0) {
+        if (totalGarrafas <= 0) {
             System.out.println("[CalculadoraImpacto] Lote sem garrafas registradas.");
             return 0;
         }

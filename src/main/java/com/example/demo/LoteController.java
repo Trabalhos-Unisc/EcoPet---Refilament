@@ -57,11 +57,45 @@ public class LoteController {
         Lote lote = service.buscarLotePorId(id);
         
         if (lote != null) {
-            lote.adicionarGarrafa(novaGarrafa);
-            return ResponseEntity.ok(lote); // Devolve o lote atualizado para conferência
+            // Busca a garrafa real no serviço para pegar todos os dados (peso, data)
+            Garrafa garrafaReal = service.buscarGarrafaPorId(novaGarrafa.getId());
+            if (garrafaReal != null) {
+                lote.adicionarGarrafa(garrafaReal);
+                return ResponseEntity.ok(lote); // Devolve o lote atualizado para conferência
+            } else {
+                return ResponseEntity.badRequest().body("Erro: A garrafa com ID " + novaGarrafa.getId() + " não foi encontrada no sistema.");
+            }
         }
         
         // Se o usuário tentar botar garrafa em um lote que não criou antes:
+        return ResponseEntity.badRequest().body("Erro: O lote com ID " + id + " não existe.");
+    }
+
+    // Rota para Deletar um Lote
+    // Método: DELETE | URL: http://localhost:8080/api/lotes/L001
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarLote(@PathVariable String id) {
+        boolean removido = service.removerLote(id);
+        if (removido) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Rota para Remover uma Garrafa de um Lote Existente
+    // Método: DELETE | URL: http://localhost:8080/api/lotes/L001/garrafas/G001
+    @DeleteMapping("/{id}/garrafas/{garrafaId}")
+    public ResponseEntity<?> removerGarrafaDoLote(@PathVariable String id, @PathVariable String garrafaId) {
+        Lote lote = service.buscarLotePorId(id);
+        if (lote != null) {
+            boolean removido = lote.getGarrafa().removeIf(g -> g.getId().equalsIgnoreCase(garrafaId));
+            if (removido) {
+                return ResponseEntity.ok(lote);
+            } else {
+                return ResponseEntity.badRequest().body("Erro: A garrafa com ID " + garrafaId + " não está no lote.");
+            }
+        }
         return ResponseEntity.badRequest().body("Erro: O lote com ID " + id + " não existe.");
     }
 }

@@ -17,6 +17,15 @@ public class EcoPetService {
     // Métodos para o Controller de Garrafas
     public List<Garrafa> getGarrafas() { return garrafas; }
     public void adicionarGarrafa(Garrafa g) { garrafas.add(g); }
+    public boolean removerGarrafa(String id) {
+        return garrafas.removeIf(g -> g.getId().equalsIgnoreCase(id));
+    }
+    public Garrafa buscarGarrafaPorId(String id) {
+        return garrafas.stream()
+                .filter(g -> g.getId().equalsIgnoreCase(id))
+                .findFirst()
+                .orElse(null);
+    }
 
     // Métodos para o Controller de Lotes
     public List<Lote> getLotes() { return lotes; }
@@ -27,6 +36,10 @@ public class EcoPetService {
                 .findFirst()
                 .orElse(null);
     }
+    public boolean removerLote(String id) {
+        return lotes.removeIf(l -> l.getId().equalsIgnoreCase(id));
+    }
+
 
     // Métodos para o Controller de Extrusão e Estoque
     public List<ProcessoExtrusao> getProcessos() { return processos; }
